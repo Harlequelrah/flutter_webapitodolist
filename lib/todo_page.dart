@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class TodoPage extends StatelessWidget {
   const TodoPage({super.key});
@@ -8,10 +7,10 @@ class TodoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Suivi d\'habitude',
+      title: 'Application de TodoList',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.red), // Replace with your desired color
+            seedColor: Colors.red),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.amber,
         appBarTheme: const AppBarTheme(
@@ -19,7 +18,7 @@ class TodoPage extends StatelessWidget {
             color: Colors.red,
             fontSize: 35,
             fontWeight: FontWeight.bold,
-          ), // Replace with your desired color
+          ),
         ),
       ),
       home: const MyHomePage(),
