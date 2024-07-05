@@ -3,12 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class RegistrationPage extends StatelessWidget {
-  const RegistrationPage({Key? key});
+  const RegistrationPage({Key? key}) : super(key: key);
 
   Future<void> register(
       String username, String password, BuildContext context) async {
     final url = Uri.parse(
-        'http://localhost:5208/api/Todo/register'); // Remplacez par votre endpoint d'inscription
+        'http://10.0.2.2:5208/api/Todo/register'); // Remplacez par votre endpoint d'inscription
+
+    // Vérifiez si les champs sont vides avant d'envoyer la requête
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez remplir tous les champs.')),
+      );
+      return;
+    }
+
     try {
       final response = await http.post(
         url,
@@ -21,34 +30,60 @@ class RegistrationPage extends StatelessWidget {
         }),
       );
 
+      print('Statut de la réponse: ${response.statusCode}');
+      print('Réponse du serveur: ${response.body}');
+
       if (response.statusCode == 200) {
-        // Succès : l'utilisateur est inscrit, récupérez le token si nécessaire
         final Map<String, dynamic> responseData = jsonDecode(response.body);
-        final String token = responseData['Token'];
-        // Gérez le token comme requis
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Inscription réussie'),
-          ),
-        );
+
+        // Vérifiez la présence et le type de la clé 'token' en minuscules
+        if (responseData.containsKey('token') &&
+            responseData['token'] != null &&
+            responseData['token'] is String) {
+          final String token = responseData['token'];
+          // Gérez le token comme requis, par exemple, en le stockant de manière sécurisée
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Inscription réussie')),
+          );
+
+          // Naviguez vers une autre page ou effectuez une autre action
+          // Exemple :
+          // Navigator.push(context, MaterialPageRoute(builder: (context) => SomePage()));
+        } else {
+          // Si le token est absent ou invalide
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    'Inscription réussie, mais token manquant ou invalide.')),
+          );
+        }
       } else {
-        // Échec : affichez le message d'erreur ou gérez l'échec d'une autre manière
-        throw Exception('Failed to register user');
+        // Affichez le message d'erreur du serveur ou gérez l'échec d'une autre manière
+        String errorMessage =
+            'Échec de l\'inscription. Code: ${response.statusCode}';
+        if (response.body.isNotEmpty) {
+          final Map<String, dynamic> errorData = jsonDecode(response.body);
+          if (errorData.containsKey('message')) {
+            errorMessage = errorData['message'];
+          }
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
       }
     } catch (e) {
       // Gestion des erreurs d'inscription
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur d\'inscription: $e'),
-        ),
+        SnackBar(content: Text('Erreur d\'inscription: ${e.toString()}')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    String username = '';
-    String password = '';
+    final TextEditingController _usernameController = TextEditingController();
+    final TextEditingController _passwordController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -60,13 +95,13 @@ class RegistrationPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TextField(
-              onChanged: (value) => username = value,
+              controller: _usernameController,
               decoration: const InputDecoration(
                 labelText: 'Nom d\'utilisateur',
               ),
             ),
             TextField(
-              onChanged: (value) => password = value,
+              controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(
                 labelText: 'Mot de passe',
@@ -74,7 +109,8 @@ class RegistrationPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                register(username, password, context); // Passer context ici
+                register(_usernameController.text, _passwordController.text,
+                    context);
               },
               child: const Text('S\'inscrire'),
             ),
