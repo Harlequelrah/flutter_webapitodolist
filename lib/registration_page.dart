@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'registration_service.dart';
+import 'authentication_service.dart';
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});

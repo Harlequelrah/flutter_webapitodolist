@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_service.dart';
+import 'authentication_service.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -32,9 +32,8 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                login(usernameController.text, passwordController.text,
-                    context);
+              onPressed: () async {
+                await login(usernameController.text, passwordController.text, context);
               },
               child: const Text('Se connecter'),
             ),
