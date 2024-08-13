@@ -128,11 +128,6 @@ Future<void> register(
           const SnackBar(content: Text('Inscription réussie')),
         );
 
-        // Vous pouvez récupérer et sauvegarder le refresh token ici si nécessaire
-        // final String refreshToken = responseData['refreshToken'];
-        // await _saveRefreshToken(refreshToken);
-
-        // Connecter automatiquement après l'inscription
         await login(username, password, context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -159,5 +154,6 @@ Future<void> register(
       SnackBar(content: Text('Erreur d\'inscription: ${e.toString()}')),
     );
   }
+  
 }
 
